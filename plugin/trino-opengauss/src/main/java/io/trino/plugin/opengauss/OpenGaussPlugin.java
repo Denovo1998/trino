@@ -17,9 +17,10 @@ package io.trino.plugin.opengauss;
 import io.trino.plugin.jdbc.JdbcPlugin;
 
 public class OpenGaussPlugin
-        extends JdbcPlugin {
-
-    public OpenGaussPlugin() {
+        extends JdbcPlugin
+{
+    public OpenGaussPlugin()
+    {
         super("opengauss", new OpenGaussClientModule());
     }
 }

@@ -1,5 +1,4 @@
 /*
- * Copyright (C) 2018-2020. Huawei Technologies Co., Ltd. All rights reserved.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -30,10 +29,12 @@ import static io.airlift.configuration.ConfigBinder.configBinder;
 import static io.trino.plugin.jdbc.JdbcModule.bindSessionPropertiesProvider;
 
 public class OpenGaussClientModule
-        extends AbstractConfigurationAwareModule {
+        extends AbstractConfigurationAwareModule
+{
 
     @Override
-    protected void setup(Binder binder) {
+    protected void setup(Binder binder)
+    {
         binder.bind(JdbcClient.class).annotatedWith(ForBaseJdbc.class).to(OpenGaussClient.class).in(Scopes.SINGLETON);
         configBinder(binder).bindConfig(PostgreSqlConfig.class);
         bindSessionPropertiesProvider(binder, PostgreSqlSessionProperties.class);
@@ -44,7 +45,8 @@ public class OpenGaussClientModule
     @Provides
     @Singleton
     @ForBaseJdbc
-    public ConnectionFactory getConnectionFactory(BaseJdbcConfig config, CredentialProvider credentialProvider) {
+    public ConnectionFactory getConnectionFactory(BaseJdbcConfig config, CredentialProvider credentialProvider)
+    {
         return new DriverConnectionFactory(new Driver(), config, credentialProvider);
     }
 }

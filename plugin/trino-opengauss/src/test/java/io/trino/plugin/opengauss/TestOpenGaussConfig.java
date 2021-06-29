@@ -21,15 +21,18 @@ import org.testng.annotations.Test;
 
 import java.util.Map;
 
-public class TestOpenGaussConfig {
+public class TestOpenGaussConfig
+{
     @Test
-    public void testDefaults() {
+    public void testDefaults()
+    {
         ConfigAssertions.assertRecordedDefaults(ConfigAssertions.recordDefaults(PostgreSqlConfig.class)
                 .setArrayMapping(PostgreSqlConfig.ArrayMapping.DISABLED));
     }
 
     @Test
-    public void testExplicitPropertyMappings() {
+    public void testExplicitPropertyMappings()
+    {
         Map<String, String> properties = new ImmutableMap.Builder<String, String>()
                 .put("postgresql.experimental.array-mapping", "AS_ARRAY")
                 .build();

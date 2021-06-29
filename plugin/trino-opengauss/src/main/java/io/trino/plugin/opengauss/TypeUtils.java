@@ -56,13 +56,15 @@ import static java.lang.Math.toIntExact;
 import static java.util.concurrent.TimeUnit.DAYS;
 import static org.joda.time.DateTimeZone.UTC;
 
-final class TypeUtils {
-    private TypeUtils() {
-    }
+final class TypeUtils
+{
+
+    private TypeUtils() { }
 
     // PostgreSQL jdbc array element names understood by org.postgresql.jdbc2.TypeInfoCache#getPGArrayType
     // for multidimensional arrays, this should return the base type (e.g. array(array(integer)) returns 'integer')
-    static String getArrayElementPgTypeName(ConnectorSession session, PostgreSqlClient client, Type elementType) {
+    static String getArrayElementPgTypeName(ConnectorSession session, PostgreSqlClient client, Type elementType)
+    {
         if (DOUBLE.equals(elementType)) {
             return "float";
         }
@@ -101,7 +103,8 @@ final class TypeUtils {
     }
 
     static Object[] getJdbcObjectArray(ConnectorSession session, Type elementType, Block block)
-            throws SQLException {
+            throws SQLException
+    {
         int positionCount = block.getPositionCount();
         Object[] valuesArray = new Object[positionCount];
         int subArrayLength = 1;
@@ -119,7 +122,8 @@ final class TypeUtils {
         return valuesArray;
     }
 
-    public static int arrayDepth(Object jdbcArray) {
+    public static int arrayDepth(Object jdbcArray)
+    {
         checkArgument(jdbcArray.getClass().isArray(), "jdbcArray is not an array");
         int depth = 0;
         while (jdbcArray != null && jdbcArray.getClass().isArray()) {
@@ -132,7 +136,8 @@ final class TypeUtils {
         return depth;
     }
 
-    private static void handleArrayNulls(Object[] valuesArray, int length) {
+    private static void handleArrayNulls(Object[] valuesArray, int length)
+    {
         for (int i = 0; i < valuesArray.length; i++) {
             if (valuesArray[i] == null) {
                 valuesArray[i] = new Object[length];
@@ -141,7 +146,8 @@ final class TypeUtils {
     }
 
     private static Object prestoNativeToJdbcObject(ConnectorSession session, Type prestoType, Object prestoNative)
-            throws SQLException {
+            throws SQLException
+    {
         if (prestoNative == null) {
             return null;
         }
@@ -214,7 +220,8 @@ final class TypeUtils {
     }
 
     static PGobject toPgTimestamp(LocalDateTime localDateTime)
-            throws SQLException {
+            throws SQLException
+    {
         PGobject pgObject = new PGobject();
         pgObject.setType("timestamp");
         pgObject.setValue(localDateTime.toString());

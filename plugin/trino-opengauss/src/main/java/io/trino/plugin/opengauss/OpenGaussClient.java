@@ -39,15 +39,18 @@ import static io.trino.spi.type.TimestampWithTimeZoneType.TIMESTAMP_WITH_TIME_ZO
 import static io.trino.spi.type.VarbinaryType.VARBINARY;
 
 public class OpenGaussClient
-        extends PostgreSqlClient {
+        extends PostgreSqlClient
+{
     @Inject
     public OpenGaussClient(BaseJdbcConfig config, PostgreSqlConfig postgreSqlConfig,
-                           ConnectionFactory connectionFactory, TypeManager typeManager, IdentifierMapping identifierMapping) {
+                           ConnectionFactory connectionFactory, TypeManager typeManager, IdentifierMapping identifierMapping)
+    {
         super(config, postgreSqlConfig, connectionFactory, typeManager, identifierMapping);
     }
 
     @Override
-    public WriteMapping toWriteMapping(ConnectorSession session, Type type) {
+    public WriteMapping toWriteMapping(ConnectorSession session, Type type)
+    {
         if (VARBINARY.equals(type)) {
             return WriteMapping.sliceMapping("bytea", varbinaryWriteFunction());
         }
@@ -74,7 +77,8 @@ public class OpenGaussClient
         return super.toWriteMapping(session, type);
     }
 
-    protected static LongWriteFunction timestampWithTimeZoneWriteFunction() {
+    protected static LongWriteFunction timestampWithTimeZoneWriteFunction()
+    {
         return (statement, index, value) -> {
             // PostgreSQL does not store zone information in "timestamp with time zone" data type
             long millisUtc = unpackMillisUtc(value);
@@ -82,25 +86,9 @@ public class OpenGaussClient
         };
     }
 
-    /*@Override
-    public ColumnMapping jsonColumnMapping() {
-        return ColumnMapping.sliceMapping(
-                jsonType,
-                (resultSet, columnIndex) -> jsonParse(utf8Slice(resultSet.getString(columnIndex))),
-                typedVarcharWriteFunction("json"),
-                DISABLE_PUSHDOWN);
-    }*/
-
-    /*@Override
-    public ColumnMapping typedVarcharColumnMapping(String jdbcTypeName) {
-        return ColumnMapping.sliceMapping(
-                VarcharType.VARCHAR,
-                (resultSet, columnIndex) -> utf8Slice(resultSet.getString(columnIndex)),
-                typedVarcharWriteFunction(jdbcTypeName));
-    }*/
-
     @Override
-    public Optional<ColumnMapping> toColumnMapping(ConnectorSession session, Connection connection, JdbcTypeHandle typeHandle) {
+    public Optional<ColumnMapping> toColumnMapping(ConnectorSession session, Connection connection, JdbcTypeHandle typeHandle)
+    {
         String jdbcTypeName = typeHandle.getJdbcTypeName()
                 .orElseThrow(() -> new TrinoException(JDBC_ERROR, "Type name is missing: " + typeHandle));
 
@@ -152,7 +140,8 @@ public class OpenGaussClient
         return super.toColumnMapping(session, connection, typeHandle);
     }
 
-    protected static SliceWriteFunction typedVarcharWriteFunction(String jdbcTypeName) {
+    protected static SliceWriteFunction typedVarcharWriteFunction(String jdbcTypeName)
+    {
         return (statement, index, value) -> {
             PGobject pgObject = new PGobject();
             pgObject.setType(jdbcTypeName);
