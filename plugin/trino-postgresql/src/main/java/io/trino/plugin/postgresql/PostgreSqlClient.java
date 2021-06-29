@@ -850,7 +850,7 @@ public class PostgreSqlClient
     // When writing with setObject() using LocalDateTime, driver converts the value to string representing date-time in JVM zone,
     // therefore cannot represent local date-time which is a "gap" in this zone.
     // TODO replace this method with StandardColumnMappings#timestampWriteFunction when https://github.com/pgjdbc/pgjdbc/issues/1390 is done
-    private static void shortTimestampWriteFunction(PreparedStatement statement, int index, long epochMicros)
+    protected static void shortTimestampWriteFunction(PreparedStatement statement, int index, long epochMicros)
             throws SQLException
     {
         LocalDateTime localDateTime = fromTrinoTimestamp(epochMicros);
@@ -883,7 +883,7 @@ public class PostgreSqlClient
         execute(session, sql);
     }
 
-    private static ColumnMapping timestampWithTimeZoneColumnMapping(int precision)
+    protected static ColumnMapping timestampWithTimeZoneColumnMapping(int precision)
     {
         // PostgreSQL supports timestamptz precision up to microseconds
         checkArgument(precision <= POSTGRESQL_MAX_SUPPORTED_TIMESTAMP_PRECISION, "unsupported precision value %s", precision);
@@ -989,7 +989,7 @@ public class PostgreSqlClient
         });
     }
 
-    private static ColumnMapping arrayColumnMapping(ConnectorSession session, ArrayType arrayType, ColumnMapping arrayElementMapping, String baseElementJdbcTypeName)
+    protected static ColumnMapping arrayColumnMapping(ConnectorSession session, ArrayType arrayType, ColumnMapping arrayElementMapping, String baseElementJdbcTypeName)
     {
         return ColumnMapping.objectMapping(
                 arrayType,
@@ -1029,7 +1029,7 @@ public class PostgreSqlClient
         });
     }
 
-    private static ObjectWriteFunction arrayWriteFunction(ConnectorSession session, Type elementType, String baseElementJdbcTypeName)
+    protected static ObjectWriteFunction arrayWriteFunction(ConnectorSession session, Type elementType, String baseElementJdbcTypeName)
     {
         return ObjectWriteFunction.of(Block.class, (statement, index, block) -> {
             Array jdbcArray = statement.getConnection().createArrayOf(baseElementJdbcTypeName, getJdbcObjectArray(session, elementType, block));
@@ -1077,7 +1077,7 @@ public class PostgreSqlClient
         };
     }
 
-    private static JdbcTypeHandle getArrayElementTypeHandle(Connection connection, JdbcTypeHandle arrayTypeHandle)
+    protected static JdbcTypeHandle getArrayElementTypeHandle(Connection connection, JdbcTypeHandle arrayTypeHandle)
     {
         String jdbcTypeName = arrayTypeHandle.getJdbcTypeName()
                 .orElseThrow(() -> new TrinoException(JDBC_ERROR, "Type name is missing: " + arrayTypeHandle));
@@ -1098,7 +1098,7 @@ public class PostgreSqlClient
         }
     }
 
-    private ColumnMapping jsonColumnMapping()
+    protected ColumnMapping jsonColumnMapping()
     {
         return ColumnMapping.sliceMapping(
                 jsonType,
@@ -1107,7 +1107,7 @@ public class PostgreSqlClient
                 DISABLE_PUSHDOWN);
     }
 
-    private static ColumnMapping typedVarcharColumnMapping(String jdbcTypeName)
+    protected static ColumnMapping typedVarcharColumnMapping(String jdbcTypeName)
     {
         return ColumnMapping.sliceMapping(
                 VARCHAR,
@@ -1172,7 +1172,7 @@ public class PostgreSqlClient
                 DISABLE_PUSHDOWN);
     }
 
-    private static SliceWriteFunction uuidWriteFunction()
+    protected static SliceWriteFunction uuidWriteFunction()
     {
         return (statement, index, value) -> {
             long high = Long.reverseBytes(value.getLong(0));
@@ -1189,7 +1189,7 @@ public class PostgreSqlClient
                 Long.reverseBytes(uuid.getLeastSignificantBits()));
     }
 
-    private ColumnMapping uuidColumnMapping()
+    protected ColumnMapping uuidColumnMapping()
     {
         return ColumnMapping.sliceMapping(
                 uuidType,

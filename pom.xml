@@ -161,6 +161,7 @@
         <module>testing/trino-testing-kafka</module>
         <module>testing/trino-testing-services</module>
         <module>testing/trino-tests</module>
+        <module>plugin/trino-opengauss</module>
     </modules>
 
     <repositories>
